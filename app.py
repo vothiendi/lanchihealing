@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # ===== CẤU HÌNH ẢNH =====
-HERO_IMAGE = "hình ảnh.jpeg"
+HERO_IMAGE = "hinhanh.png"
 
 # ===== STATE =====
 if "page" not in st.session_state:
@@ -102,6 +102,11 @@ label, .stTextInput label, .stTextArea label {
     line-height: 1.75;
 }
 
+.card-link {
+    text-decoration: none !important;
+    display: block;
+}
+
 .card {
     min-height: 215px;
     padding: 28px;
@@ -111,6 +116,7 @@ label, .stTextInput label, .stTextArea label {
     box-shadow: 0 18px 48px rgba(0,0,0,0.18);
     transition: 0.25s ease;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .card:hover {
@@ -138,6 +144,7 @@ label, .stTextInput label, .stTextArea label {
 .card.work {
     background: linear-gradient(135deg, rgba(232, 226, 214, 0.72), rgba(197, 190, 178, 0.58));
     color: #242724;
+    cursor: default;
 }
 
 .card.asset {
@@ -148,6 +155,7 @@ label, .stTextInput label, .stTextArea label {
 .card.rest {
     background: linear-gradient(135deg, rgba(239, 241, 236, 0.62), rgba(202, 202, 194, 0.50));
     color: #252826;
+    cursor: default;
 }
 
 .card.heal h3, .card.heal p,
@@ -254,12 +262,28 @@ div.stButton > button {
     font-weight: 800;
     box-shadow: 0 12px 28px rgba(0,0,0,0.16);
 }
+
+.stInfo {
+    background: rgba(255,255,255,0.13) !important;
+    color: #fff8ee !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+}
+
+.stInfo div, .stInfo p {
+    color: #fff8ee !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
+# ===== ĐỌC QUERY PARAM =====
+query_params = st.query_params
+if "page" in query_params:
+    st.session_state.page = query_params["page"]
 
 # ===== NAV =====
 def go_home():
     if st.button("← Quay về trang đầu"):
+        st.query_params.clear()
         st.session_state.page = "home"
         st.rerun()
 
@@ -285,7 +309,7 @@ def home_page():
         except Exception:
             st.markdown("""
             <div class="box">
-                <p class="note">Ảnh của Chi sẽ hiện ở đây khi tên file ảnh khớp với HERO_IMAGE trong app.py.</p>
+                <p class="note">Ảnh của Chi sẽ hiện ở đây khi file hinhanh.png nằm cùng thư mục với app.py trên GitHub.</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -293,14 +317,13 @@ def home_page():
 
     with col1:
         st.markdown("""
-        <div class="card heal">
-            <h3>Chữa lành</h3>
-            <p>Mỗi ngày một đóa hoa, một lời chúc dịu và một ô nhỏ để Chi viết lại cảm xúc của mình.</p>
-        </div>
+        <a class="card-link" href="?page=healing" target="_self">
+            <div class="card heal">
+                <h3>Chữa lành</h3>
+                <p>Mỗi ngày một đóa hoa, một lời chúc dịu và một ô nhỏ để Chi viết lại cảm xúc của mình.</p>
+            </div>
+        </a>
         """, unsafe_allow_html=True)
-        if st.button("Mở trang Chữa lành"):
-            st.session_state.page = "healing"
-            st.rerun()
 
     with col2:
         st.markdown("""
@@ -314,14 +337,13 @@ def home_page():
 
     with col3:
         st.markdown("""
-        <div class="card asset">
-            <h3>Chuẩn bị tài sản</h3>
-            <p>Các bảng tính tài chính để theo dõi vốn, điểm hòa vốn, dòng tiền và tài sản một cách rõ ràng hơn.</p>
-        </div>
+        <a class="card-link" href="?page=asset" target="_self">
+            <div class="card asset">
+                <h3>Chuẩn bị tài sản</h3>
+                <p>Các bảng tính tài chính để theo dõi vốn, điểm hòa vốn, dòng tiền và tài sản một cách rõ ràng hơn.</p>
+            </div>
+        </a>
         """, unsafe_allow_html=True)
-        if st.button("Mở công thức tài chính"):
-            st.session_state.page = "asset"
-            st.rerun()
 
     with col4:
         st.markdown("""
@@ -553,9 +575,27 @@ def asset_page():
     st.pyplot(fig, use_container_width=True)
 
     if profit_loss >= 0:
-        st.info(f"Hiện giá trị sau phí đang cao hơn vốn gốc khoảng {profit_loss:,.0f} đ.")
+        st.markdown(
+            f"""
+            <div class="box">
+                <p style="color:#fff8ee; font-size:16px; margin:0;">
+                    Hiện giá trị sau phí đang cao hơn vốn gốc khoảng {profit_loss:,.0f} đ.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     else:
-        st.info(f"Hiện còn cách hòa vốn khoảng {abs(profit_loss):,.0f} đ.")
+        st.markdown(
+            f"""
+            <div class="box">
+                <p style="color:#fff8ee; font-size:16px; margin:0;">
+                    Hiện còn cách hòa vốn khoảng {abs(profit_loss):,.0f} đ.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # ===== ROUTER =====
 if st.session_state.page == "healing":
