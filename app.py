@@ -9,14 +9,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# ===== CẤU HÌNH ẢNH =====
 HERO_IMAGE = "hinhanh.png"
 
-# ===== STATE =====
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
-# ===== HOA MỖI NGÀY =====
 flowers = [
     ("Hoa quỳnh trắng", "✧ 𓆸 ✧", "Hôm nay anh gửi Chi một đóa quỳnh trắng, nở thật khẽ như một khoảng thở sạch. Mong mọi điều nặng trong lòng em dịu xuống từng chút."),
     ("Hoa trà hồng phấn", "❀ 𓂃 ❀", "Hôm nay là một đóa trà hồng phấn, dịu mà vẫn sang. Mong Chi giữ được vẻ bình tĩnh đẹp đẽ của mình và thương mình nhiều hơn một chút."),
@@ -27,7 +24,6 @@ flowers = [
     ("Hoa oải hương", "☾ 𖧧 ☽", "Anh gửi Chi một nhánh oải hương tím nhạt. Mong đầu óc em bớt ồn, hơi thở chậm lại, và những việc cần làm tự nằm vào hàng lối rõ ràng."),
 ]
 
-# ===== HÀM TÍNH TIỀN =====
 def format_vnd(value):
     return f"{int(value):,}"
 
@@ -40,7 +36,6 @@ def parse_vnd(text, default=0.0):
     except ValueError:
         return float(default)
 
-# ===== CSS =====
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap');
@@ -73,6 +68,21 @@ label, .stTextInput label, .stTextArea label {
     border: 1px solid rgba(255,255,255,0.23);
     box-shadow: 0 24px 80px rgba(0,0,0,0.28);
     margin-bottom: 28px;
+}
+
+.hero-photo-frame {
+    margin-top: 24px;
+    padding: 16px;
+    border-radius: 38px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.22);
+}
+
+.hero-photo-frame img {
+    border-radius: 30px;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.18);
 }
 
 .pill {
@@ -186,8 +196,6 @@ label, .stTextInput label, .stTextArea label {
 
 img {
     border-radius: 34px;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.30);
-    border: 1px solid rgba(255,255,255,0.22);
 }
 
 .note, .small-soft {
@@ -275,19 +283,16 @@ div.stButton > button {
 </style>
 """, unsafe_allow_html=True)
 
-# ===== ĐỌC QUERY PARAM =====
 query_params = st.query_params
 if "page" in query_params:
     st.session_state.page = query_params["page"]
 
-# ===== NAV =====
 def go_home():
     if st.button("← Quay về trang đầu"):
         st.query_params.clear()
         st.session_state.page = "home"
         st.rerun()
 
-# ===== TRANG ĐẦU =====
 def home_page():
     left, right = st.columns([1.12, 0.88])
 
@@ -305,10 +310,12 @@ def home_page():
 
     with right:
         try:
+            st.markdown('<div class="hero-photo-frame">', unsafe_allow_html=True)
             st.image(HERO_IMAGE, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         except Exception:
             st.markdown("""
-            <div class="box">
+            <div class="box" style="margin-top:24px;">
                 <p class="note">Ảnh của Chi sẽ hiện ở đây khi file hinhanh.png nằm cùng thư mục với app.py trên GitHub.</p>
             </div>
             """, unsafe_allow_html=True)
@@ -385,7 +392,6 @@ def home_page():
     </div>
     """, unsafe_allow_html=True)
 
-# ===== TRANG CHỮA LÀNH =====
 def healing_page():
     go_home()
 
@@ -426,7 +432,6 @@ def healing_page():
     </div>
     """, unsafe_allow_html=True)
 
-# ===== TRANG TÀI SẢN =====
 def asset_page():
     go_home()
 
@@ -575,29 +580,21 @@ def asset_page():
     st.pyplot(fig, use_container_width=True)
 
     if profit_loss >= 0:
-        st.markdown(
-            f"""
-            <div class="box">
-                <p style="color:#fff8ee; font-size:16px; margin:0;">
-                    Hiện giá trị sau phí đang cao hơn vốn gốc khoảng {profit_loss:,.0f} đ.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        result_text = f"Hiện giá trị sau phí đang cao hơn vốn gốc khoảng {profit_loss:,.0f} đ."
     else:
-        st.markdown(
-            f"""
-            <div class="box">
-                <p style="color:#fff8ee; font-size:16px; margin:0;">
-                    Hiện còn cách hòa vốn khoảng {abs(profit_loss):,.0f} đ.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        result_text = f"Hiện còn cách hòa vốn khoảng {abs(profit_loss):,.0f} đ."
 
-# ===== ROUTER =====
+    st.markdown(
+        f"""
+        <div class="box">
+            <p style="color:#fff8ee; font-size:16px; margin:0;">
+                {result_text}
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 if st.session_state.page == "healing":
     healing_page()
 elif st.session_state.page == "asset":
